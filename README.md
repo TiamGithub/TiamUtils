@@ -1,3 +1,3 @@
 # TiamUtils
 
-Collection of Swift extensions and helpers
+Swift Package library of extensions and helpers for iOS.
