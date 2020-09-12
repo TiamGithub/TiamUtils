@@ -6,6 +6,6 @@ public protocol ReusableIdentifier: NSObject {
 
 public extension ReusableIdentifier {
     static var reuseIdentifier: String {
-        return String(describing: self)
+        return NSStringFromClass(self)
     }
 }

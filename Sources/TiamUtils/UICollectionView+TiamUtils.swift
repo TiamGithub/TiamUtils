@@ -14,7 +14,7 @@ public extension UICollectionView {
 
     func register<T: UICollectionReusableView>(_ item: Item, ofType viewClass: T.Type) {
         let bundle = Bundle(for: viewClass)
-        let nibName = String(describing: viewClass)
+        let nibName = NSStringFromClass(viewClass)
         let nibExists = bundle.path(forResource: nibName, ofType: "nib") != nil
 
         switch (nibExists, item) {
