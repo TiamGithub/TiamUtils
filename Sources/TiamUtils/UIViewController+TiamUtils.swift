@@ -26,6 +26,18 @@ public extension UIViewController {
             child2.didMove(toParent: self)
         })
     }
+
+    /// Only valid for single window apps without a `UISceneDelegate`
+    /// - Returns: frontmost presented UIViewController
+    static func topPresentedController() -> UIViewController? {
+        var topController = UIApplication.shared.delegate?.window??.rootViewController
+
+        while topController?.presentedViewController != nil {
+            topController = topController?.presentedViewController
+        }
+
+        return topController
+    }
 }
 
 public extension UIPopoverPresentationControllerDelegate where Self: UIViewController {

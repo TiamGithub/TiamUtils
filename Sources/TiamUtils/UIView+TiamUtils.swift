@@ -1,6 +1,17 @@
 import UIKit
 
 public extension UIView {
+    var isVisible: Bool {
+        get {
+            return !self.isHidden
+        }
+        set {
+            if newValue != self.isVisible {
+                self.isHidden = !newValue
+            }
+        }
+    }
+
     func embedSubview(_ subview: UIView, edgeInsets: UIEdgeInsets = .zero) {
         addSubview(subview)
         activateContraintsToGuide(forSubview: subview, insets: edgeInsets)
@@ -28,5 +39,13 @@ public extension UIView {
         }
 
         return result
+    }
+
+    /// Prefer reusing a single renderer multiple times if rendering many same-sized images
+    func renderToImage() -> UIImage {
+        let renderer = UIGraphicsImageRenderer(bounds: bounds)
+        return renderer.image { rendererContext in
+            layer.render(in: rendererContext.cgContext)
+        }
     }
 }
