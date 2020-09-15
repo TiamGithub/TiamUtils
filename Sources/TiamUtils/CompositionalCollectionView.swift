@@ -1,11 +1,21 @@
 import UIKit
 
+/// A strongly typed compositional collection view
+/// - Note: not compatible with Interface Builder
 @available(iOS 13.0, *)
 public class CompositionalCollectionView<C: UICollectionViewCell, H: UICollectionReusableView, F: UICollectionReusableView>: UICollectionView {
     #if DEBUG
-    private let hasRegistered: (header: Bool, footer: Bool)
+    let hasRegistered: (header: Bool, footer: Bool)
     #endif
 
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+    /// Designated initialisers that automatically registers cell and supplementary view
+    /// - Parameters:
+    ///   - layout: a compositional layout
+    ///   - cellClass: a mandatory cell class
+    ///   - headerClass: an optional header class
+    ///   - footerClass: an optional footer class
     public init(layout: UICollectionViewCompositionalLayout, cellClass: C.Type, headerClass: H.Type? = nil, footerClass: F.Type? = nil) {
         #if DEBUG
         self.hasRegistered = (headerClass != nil, footerClass != nil)
@@ -22,10 +32,20 @@ public class CompositionalCollectionView<C: UICollectionViewCell, H: UICollectio
         }
     }
 
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-
+    /// Builds a strongly typed diffable dat source specialized for the current collection view
+    /// - Parameters:
+    ///   - configureCell: Callback to configure the cell
+    ///    - cv: the current compositional collection view
+    ///    - cell: the dequeued cell to configure
+    ///    - indexPAth: the dequeued cell indexPath
+    ///    - cellIdentifier: the unique identifier provided by the diffable data source
+    ///   - configureHeader: Optional callback to configure the header
+    ///   - configureFooter: Optional callback to configure the footer
+    ///   - prefetchCallback: Optional prefetching callback
+    /// - Returns: The dataSource and prefetchDataSource(if requested) for the current collection view
+    /// - Note: You must keep a strong reference to this object
     public func makeDiffableDataSource<SI: Hashable, II: Hashable>(
-        configureCell: @escaping (Self, C, IndexPath, II) -> Void,
+        configureCell: @escaping (_ cv: Self, _ cell: C, _ indexPath: IndexPath, _ cellIdentifier: II) -> Void,
         configureHeader: ((CompositionalCollectionView<C, H, F>, H, IndexPath) -> Void)? = nil,
         configureFooter: ((CompositionalCollectionView<C, H, F>, F, IndexPath) -> Void)? = nil,
         prefetchCallback: ((CompositionalCollectionView<C, H, F>, DiffableDataSource<SI, II>.CallbackType, [IndexPath]) -> Void)? = nil)
@@ -71,6 +91,7 @@ public class CompositionalCollectionView<C: UICollectionViewCell, H: UICollectio
         return diffableDataSource
     }
 
+    /// A specialized diffable data source that supports prefetching and dequeuing cells, headers & footers
     public class DiffableDataSource<SI: Hashable, II: Hashable>: UICollectionViewDiffableDataSource<SI, II>, UICollectionViewDataSourcePrefetching {
         public enum CallbackType {
             case fetch, cancel

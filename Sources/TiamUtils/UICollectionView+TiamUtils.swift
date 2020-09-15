@@ -12,7 +12,11 @@ public extension UICollectionView {
         case header, footer
     }
 
-    /// Xib file (if used) must have the same name as the class
+    /// Registers a cell or supplementary view with its corresponding Nib if found in the Bundle, or with its metatype
+    /// - Parameters:
+    ///   - item: cell or header or footer
+    ///   - viewClass: the view's metatype
+    /// - Note: Xib file (if used) must have the same name as the class
     func register<T: UICollectionReusableView>(_ item: Item, ofType viewClass: T.Type) {
         let bundle = Bundle(for: viewClass)
         let nibName = String(describing: viewClass)
@@ -30,6 +34,9 @@ public extension UICollectionView {
         }
     }
 
+    /// Dequeue a reusable view registered with `register(_:, ofType:)`
+    /// - Parameters:
+    ///   - item: cell or header or footer
     func dequeueReusable<T: UICollectionReusableView>(_ item: Item, for indexPath: IndexPath) -> T {
         switch item {
         case .cell:
