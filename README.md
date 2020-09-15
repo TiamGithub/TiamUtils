@@ -6,3 +6,5 @@
 [![Build Status](https://app.bitrise.io/app/2df96dc524cc7f87/status.svg?token=WponJ4dBa0GEr4p1pEOjaw&branch=develop)](https://app.bitrise.io/app/2df96dc524cc7f87)
 
 This Swift Package provides a library of reusable helpers and extensions for iOS development.
+
+![](https://images.fineartamerica.com/images/artworkimages/mediumlarge/1/koalas-love-their-eucalyptus-kirsten-giving.jpg)
