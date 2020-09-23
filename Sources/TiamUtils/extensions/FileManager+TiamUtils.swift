@@ -33,6 +33,25 @@ public extension FileManager {
         return capacity
     }
 
+    /// Helper function to sanitize some input string in order to get a filesafe name
+    static func safeFilename(from originalFilename: String) -> String? {
+        let invalidCharacters = CharacterSet(charactersIn: ":/\\?%*|\"<>")
+            .union(.newlines)
+            .union(.illegalCharacters)
+            .union(.controlCharacters)
+        let components = originalFilename.components(separatedBy: invalidCharacters)
+        let string = components.joined(separator: "_")
+
+        guard !string.isEmpty,
+              let data = string.data(using: .ascii, allowLossyConversion: true),
+              let result = String(data: data, encoding: .ascii) else {
+            assertionFailure("Failed to create safe filename")
+            return nil
+        }
+
+        return result
+    }
+
     /// Creates a new temporary directory ready for use
     func createUniqueTemporaryDirectory() throws -> URL  {
         let component =  Bundle.main.bundleIdentifier ?? "unknown"

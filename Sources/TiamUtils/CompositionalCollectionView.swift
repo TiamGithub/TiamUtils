@@ -1,9 +1,8 @@
 import UIKit
 
-/// A strongly typed compositional collection view
-/// - Note: not compatible with Interface Builder
+/// A compositional collection view with strongly typed cell, header and footer classes, and a corresponding diffable data source
 @available(iOS 13.0, *)
-public class CompositionalCollectionView<C: UICollectionViewCell, H: UICollectionReusableView, F: UICollectionReusableView>: UICollectionView {
+public final class CompositionalCollectionView<C: UICollectionViewCell, H: UICollectionReusableView, F: UICollectionReusableView>: UICollectionView {
     #if DEBUG
     let hasRegistered: (header: Bool, footer: Bool)
     #endif
@@ -92,7 +91,7 @@ public class CompositionalCollectionView<C: UICollectionViewCell, H: UICollectio
     }
 
     /// A specialized diffable data source that supports prefetching and dequeuing cells, headers & footers
-    public class DiffableDataSource<SI: Hashable, II: Hashable>: UICollectionViewDiffableDataSource<SI, II>, UICollectionViewDataSourcePrefetching {
+    final public class DiffableDataSource<SI: Hashable, II: Hashable>: UICollectionViewDiffableDataSource<SI, II>, UICollectionViewDataSourcePrefetching {
         public enum CallbackType {
             case fetch, cancel
         }

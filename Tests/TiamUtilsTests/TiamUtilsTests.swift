@@ -90,6 +90,12 @@ final class TiamUtilsTests: XCTestCase {
             prefetchCallback: nil)
         XCTAssertNil(ccvWithoutFooterNorHeader.prefetchDataSource)
         XCTAssertNil(dataSource?.supplementaryViewProvider)
+
+        let expectation = XCTestExpectation(description: "synchronous call")
+        DispatchQueue.mainAsyncIfNeeded {
+            expectation.fulfill()
+        }
+        wait(for: [expectation], timeout: 0)
     }
 
     static var allTests = [

@@ -65,9 +65,9 @@ public extension UIColor {
         var red1 = CGFloat(0), green1 = CGFloat(0), blue1 = CGFloat(0), alpha1 = CGFloat(0)
         var red2 = CGFloat(0), green2 = CGFloat(0), blue2 = CGFloat(0), alpha2 = CGFloat(0)
 
-        guard self.getRed(&red1, green: &green1, blue: &blue1, alpha: &alpha1)
-            && destination.getRed(&red2, green: &green2, blue: &blue2, alpha: &alpha2) else {
-                return nil
+        guard self.getRed(&red1, green: &green1, blue: &blue1, alpha: &alpha1),
+              destination.getRed(&red2, green: &green2, blue: &blue2, alpha: &alpha2) else {
+            return nil
         }
 
         return UIColor(
@@ -87,9 +87,9 @@ public extension UIColor {
         var hue1 = CGFloat(0), saturation1 = CGFloat(0), brightness1 = CGFloat(0), alpha1 = CGFloat(0)
         var hue2 = CGFloat(0), saturation2 = CGFloat(0), brightness2 = CGFloat(0), alpha2 = CGFloat(0)
 
-        guard self.getHue(&hue1, saturation: &saturation1, brightness: &brightness1, alpha: &alpha1)
-            && destination.getHue(&hue2, saturation: &saturation2, brightness: &brightness2, alpha: &alpha2) else {
-                return nil
+        guard self.getHue(&hue1, saturation: &saturation1, brightness: &brightness1, alpha: &alpha1),
+              destination.getHue(&hue2, saturation: &saturation2, brightness: &brightness2, alpha: &alpha2) else {
+            return nil
         }
 
         let absolute = abs(hue2 - hue1)

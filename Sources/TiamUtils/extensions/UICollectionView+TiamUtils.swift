@@ -1,7 +1,5 @@
 import UIKit
 
-extension UICollectionReusableView: ReusableIdentifier {}
-
 public extension UICollectionView {
     enum Item {
         case cell

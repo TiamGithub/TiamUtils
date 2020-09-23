@@ -9,3 +9,7 @@ public extension ReusableIdentifier {
         return NSStringFromClass(self)
     }
 }
+
+extension UICollectionReusableView: ReusableIdentifier {}
+extension UITableViewCell: ReusableIdentifier {}
+extension UITableViewHeaderFooterView: ReusableIdentifier {}
