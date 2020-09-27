@@ -2,7 +2,12 @@ import XCTest
 @testable import TiamUtils
 
 final class TiamUtilsTests: XCTestCase {
-    func testExample() {
+    override func setUp() {
+        super.setUp()
+        continueAfterFailure = false
+    }
+
+    func testColors() {
         do {
             let red = CGFloat.random(in: 1...1.5)
             let green = CGFloat.random(in: 1...1.5)
@@ -29,21 +34,15 @@ final class TiamUtilsTests: XCTestCase {
         XCTAssertEqual(blue.morphedInto(grayscale: 0, by: 0.5)?.rgbComponents, UIColor(red: 0, green: 0, blue: 0.5, alpha: 1).rgbComponents)
         XCTAssertEqual(blue.morphedIntoHSB(green, by: 0.5)?.rgbComponents, cyan.rgbComponents)
         XCTAssertEqual(green.morphedIntoHSB(blue, by: 0.5)?.rgbComponents, cyan.rgbComponents)
+    }
 
+    func testFileManager() {
         let tmpurl1 = try? FileManager.default.createUniqueTemporaryDirectory()
         let tmpurl2 = try? FileManager.default.createUniqueTemporaryDirectory()
         XCTAssertNotNil(tmpurl1)
         XCTAssertNotNil(tmpurl2)
         XCTAssertNotEqual(tmpurl1, tmpurl2)
         XCTAssertEqual(tmpurl1?.deletingLastPathComponent(), URL.temporaryDirectory)
-
-        for url in [URL.cacheDirectory, URL.temporaryDirectory, URL.applicationSupportDirectory] {
-//            print(url)
-            let fileAtPath = url.fileAtPath()
-            XCTAssertTrue(fileAtPath.exists)
-            XCTAssertTrue(fileAtPath.isDirectory)
-        }
-//        print(URL(fileURLWithPath: Bundle.main.bundlePath))
 
         let currentlyAvailableStorageCapacity = FileManager.currentlyAvailableStorageCapacity()
         let potentiallyAvailableStorageCapacity = FileManager.potentiallyAvailableStorageCapacity(forImportantUsage: true)
@@ -53,6 +52,14 @@ final class TiamUtilsTests: XCTestCase {
         XCTAssertGreaterThan(potentiallyAvailableStorageCapacity!, 0)
         XCTAssertGreaterThanOrEqual(potentiallyAvailableStorageCapacity!,
                                     Int64(currentlyAvailableStorageCapacity!))
+    }
+
+    func testURL() {
+        for url in [URL.cacheDirectory, URL.temporaryDirectory, URL.applicationSupportDirectory] {
+            let fileAtPath = url.fileAtPath()
+            XCTAssertTrue(fileAtPath.exists)
+            XCTAssertTrue(fileAtPath.isDirectory)
+        }
     }
 
     @available(iOS 13.0, *)
@@ -98,7 +105,36 @@ final class TiamUtilsTests: XCTestCase {
         wait(for: [expectation], timeout: 0)
     }
 
+    func testFileDownloader() {
+        let fileDownloader = FileDownloader()
+        let url1 = URL(string: "https://www.google.com")!
+        let request1 = URLRequest(url: url1)
+        let expectation1 = XCTestExpectation(description: "download successful")
+        fileDownloader.startDownloadingFile(at: request1, updateHandler: { change in
+            print(change)
+            if case .finish(.success(let url)) = change {
+                XCTAssertTrue(url.fileAtPath().exists)
+                expectation1.fulfill()
+            }
+        })
+
+        let url2 = URL(string: "https://www.google.com/404")!
+        let request2 = URLRequest(url: url2)
+        let expectation2 = XCTestExpectation(description: "404 error")
+        fileDownloader.startDownloadingFile(at: request2, updateHandler: { change in
+            print(change)
+            if case .finish(.failure(let error)) = change {
+                XCTAssertEqual((error as? HTTPURLResponse.ServerError)?.statusCode, 404)
+                expectation2.fulfill()
+            }
+        })
+        wait(for: [expectation1, expectation2], timeout: 10)
+    }
+
     static var allTests = [
-        ("testExample", testExample),
+        ("testColors", testColors),
+        ("testFileManager", testFileManager),
+        ("testURL", testURL),
+        ("testFileDownloader", testFileDownloader),
     ]
 }

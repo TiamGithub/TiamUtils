@@ -47,4 +47,13 @@ public extension URL {
         }
         try (self as NSURL).setResourceValue(true, forKey: .isExcludedFromBackupKey)
     }
+
+    func appendingPathComponent(_ optionalPathComponent: String?, isDirectory: Bool = false) -> URL {
+        if let pathComponannt = optionalPathComponent {
+            return self.appendingPathComponent(pathComponannt, isDirectory: isDirectory)
+        } else {
+            return self
+        }
+    }
 }
+
