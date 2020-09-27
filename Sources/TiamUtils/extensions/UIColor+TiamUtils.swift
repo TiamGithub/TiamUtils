@@ -44,9 +44,9 @@ public extension UIColor {
         guard let rgba = self.rgbComponents else {
             return nil
         }
-        let grayscale = CGFloat(min(1, max(grayscale, 0)))
-        let alpha = CGFloat(min(1, max(alpha, 0)))
-        let amount = CGFloat(min(1, max(amount, 0)))
+        let grayscale = CGFloat(grayscale.clamped(to: 0...1))
+        let alpha = CGFloat(alpha.clamped(to: 0...1))
+        let amount = CGFloat(amount.clamped(to: 0...1))
 
         return UIColor.init(
             red: rgba.red + (grayscale - rgba.red) * amount,
@@ -61,7 +61,7 @@ public extension UIColor {
     ///   - amount: linear value between 0 and 1, where 0 returns self and 1 returns destination
     /// - Note: RGB method, best used with a nearby color or grayscale color
     func morphedIntoRGB(_ destination: UIColor, by amount: Double) -> UIColor? {
-        let amount = CGFloat(min(1, max(amount, 0)))
+        let amount = CGFloat(amount.clamped(to: 0...1))
         var red1 = CGFloat(0), green1 = CGFloat(0), blue1 = CGFloat(0), alpha1 = CGFloat(0)
         var red2 = CGFloat(0), green2 = CGFloat(0), blue2 = CGFloat(0), alpha2 = CGFloat(0)
 
@@ -83,7 +83,7 @@ public extension UIColor {
     ///   - amount: linear value between 0 and 1, where 0 returns self and 1 returns destination
     /// - Note: HSB method, not suitable for grayscale color where hue is always 0 (i.e. red)
     func morphedIntoHSB(_ destination: UIColor, by amount: Double) -> UIColor? {
-        let amount = CGFloat(min(1, max(amount, 0)))
+        let amount = CGFloat(amount.clamped(to: 0...1))
         var hue1 = CGFloat(0), saturation1 = CGFloat(0), brightness1 = CGFloat(0), alpha1 = CGFloat(0)
         var hue2 = CGFloat(0), saturation2 = CGFloat(0), brightness2 = CGFloat(0), alpha2 = CGFloat(0)
 

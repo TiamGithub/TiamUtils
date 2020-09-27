@@ -5,12 +5,12 @@ extension UILayoutPriority: ExpressibleByFloatLiteral, ExpressibleByIntegerLiter
     public typealias IntegerLiteralType = Int
 
     public init(floatLiteral value: Self.FloatLiteralType) {
-        let clamped = min(1000, max(value, 0))
+        let clamped = value.clamped(to: 0...1000)
         self.init(clamped)
     }
 
     public init(integerLiteral value: Self.IntegerLiteralType) {
-        let clamped = Float(min(1000, max(value, 0)))
+        let clamped = Float(value.clamped(to: 0...1000))
         self.init(clamped)
     }
 }
