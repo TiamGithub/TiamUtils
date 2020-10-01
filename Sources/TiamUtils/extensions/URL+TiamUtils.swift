@@ -57,3 +57,10 @@ public extension URL {
     }
 }
 
+#if DEBUG
+extension URL: ExpressibleByStringLiteral {
+    public init(stringLiteral value: StaticString) {
+        self.init(string: "\(value)")!
+    }
+}
+#endif

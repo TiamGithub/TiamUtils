@@ -14,7 +14,7 @@ extension NSLayoutYAxisAnchor: Anchor { }
 
 
 /// Common interface to UIView and UILayoutGuide
-public protocol AnchorProvider: NSObject {
+public protocol AnchorProviding: NSObject {
 
     var leadingAnchor:  NSLayoutXAxisAnchor { get }
     var trailingAnchor: NSLayoutXAxisAnchor { get }
@@ -28,17 +28,17 @@ public protocol AnchorProvider: NSObject {
     var heightAnchor:   NSLayoutDimension   { get }
 
     /// A key path to one of the provider's anchors
-    typealias AnchorKeyPath<A: Anchor> = KeyPath<AnchorProvider, A>
+    typealias AnchorKeyPath<A: Anchor> = KeyPath<AnchorProviding, A>
 }
-extension UILayoutGuide: AnchorProvider { }
-extension UIView: AnchorProvider { }
+extension UILayoutGuide: AnchorProviding { }
+extension UIView: AnchorProviding { }
 
-public extension AnchorProvider {
+public extension AnchorProviding {
     /// Create a `relation` constraint between `self` and `other` for their respective anchor at `keyPath`
     func constraint<A>(
         _ keyPath: AnchorKeyPath<A>,
         relation: NSLayoutConstraint.Relation = .equal,
-        to other: AnchorProvider,
+        to other: AnchorProviding,
         constant: CGFloat = 0)
     -> NSLayoutConstraint {
         let anchor1 = self.nsLayoutAnchor(from: keyPath)
@@ -64,7 +64,7 @@ public extension AnchorProvider {
         _ anchors: AnchorKeyPath<A>... ,
         constant: CGFloat = 0,
         relation: NSLayoutConstraint.Relation = .equal,
-        to other: AnchorProvider)
+        to other: AnchorProviding)
     -> [NSLayoutConstraint] {
         return anchors.map { keyPath in
             constraint(keyPath, relation: relation, to: other, constant: constant)

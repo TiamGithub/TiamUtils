@@ -64,7 +64,7 @@ public extension UIView {
         assert(subviews.contains(subview), "Subview must be added to its parent before activating constraints")
 
         let guide = guideKeyPath.map({ self[keyPath: $0] })
-        let destinationAnchorProvider: AnchorProvider = guide ?? self
+        let destinationAnchorProvider: AnchorProviding = guide ?? self
 
         subview.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate(
@@ -89,7 +89,7 @@ public extension UIView {
         assert(subviews.contains(subview), "Subview must be added to its parent before activating constraints")
 
         let guide = guideKeyPath.map({ self[keyPath: $0] })
-        let destinationAnchorProvider: AnchorProvider = guide ?? self
+        let destinationAnchorProvider: AnchorProviding = guide ?? self
 
         subview.translatesAutoresizingMaskIntoConstraints = false
 

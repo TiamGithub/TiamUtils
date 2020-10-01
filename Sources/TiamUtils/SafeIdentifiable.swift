@@ -1,7 +1,8 @@
 import Foundation
 
-/// Make your types identifiable with a type safe identifier. Two instances of a type having the the same unique identifer are considered equal.
+/// Make your types identifiable with a type safe identifier.
 ///
+/// - Note: Two instances of a type having the the same unique identifer are considered equal.
 /// - `id` must be of type `Identifier<Self>`. Compared to the standard `Identifiable` protocol, `SafeIdentifiable` has 2 advantages and 1 downside:
 ///   1. You cannot assign/compare a `Identifier<A>` to a `Identifier<B>` by mistake
 ///   2. The `id` property is `Hashable`, `Codable` and `CustomStringConvertible` so you can still use it as a traditional unique identifer
@@ -36,16 +37,21 @@ import Foundation
 /// func doSomething1<T: SafeIdentifiable>(t: T) { ... } // using SafeIdentifiable as generic constraint
 /// func doSomething2(t: SafeIdentifiable) { ... } // ERROR: using SafeIdentifiable as a type
 /// ````
-public protocol SafeIdentifiable: Hashable, CustomStringConvertible {
+public protocol SafeIdentifiable: Hashable, CustomStringConvertible, Identifiable {
     typealias IdentifierRequirements = Hashable & CustomStringConvertible & Codable
     associatedtype RawIdentifierType: IdentifierRequirements = String
     var id: Identifier<Self> { get }
 }
-extension SafeIdentifiable {
-    var description: String { id.description }
+
+public extension SafeIdentifiable {
+    var description: String {
+        id.description
+    }
+
     static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.id == rhs.id
     }
+
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
@@ -84,6 +90,7 @@ extension Identifier: ExpressibleByIntegerLiteral where T.RawIdentifierType == I
         rawIdentifier = value
     }
 }
+
 /// `String` specialization
 extension Identifier: ExpressibleByUnicodeScalarLiteral, ExpressibleByExtendedGraphemeClusterLiteral, ExpressibleByStringLiteral where T.RawIdentifierType == String {
     public typealias ExtendedGraphemeClusterLiteralType = String
@@ -93,6 +100,7 @@ extension Identifier: ExpressibleByUnicodeScalarLiteral, ExpressibleByExtendedGr
         rawIdentifier = value
     }
 }
+
 /// `UUID` specialization
 extension Identifier where T.RawIdentifierType == UUID {
     public init() {

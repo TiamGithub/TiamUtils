@@ -106,7 +106,15 @@ final class TiamUtilsTests: XCTestCase {
     }
 
     func testFileDownloader() {
-        let fileDownloader = FileDownloader()
+        struct Stub: StubURLsProviding {
+            static var stubURLs: [URL : Data] = [
+//                "https://www.google.com/404": Data(),
+                "https://www.google.com": "toto".data(using: .utf8)!,
+            ]
+        }
+        let fileDownloader = FileDownloader(stubClass: Stub.self)
+//        let fileDownloader = FileDownloader()
+
         let url1 = URL(string: "https://www.google.com")!
         let request1 = URLRequest(url: url1)
         let expectation1 = XCTestExpectation(description: "download successful")
@@ -128,7 +136,10 @@ final class TiamUtilsTests: XCTestCase {
                 expectation2.fulfill()
             }
         })
-        wait(for: [expectation1, expectation2], timeout: 10)
+        wait(for: [
+            expectation1,
+            expectation2,
+        ], timeout: 1000)
     }
 
     static var allTests = [

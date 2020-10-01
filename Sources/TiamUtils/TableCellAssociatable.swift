@@ -4,7 +4,7 @@ import UIKit
 /// - Note: Xib file (if used) must have the same name as the associated cell class
 /// - Example use case:
 /// ````
-/// class ViewController: UIViewController, TableCellAssociatedController {
+/// class ViewController: UIViewController, TableCellAssociatable {
 ///     static let associatedCellClass = MyCell.self
 ///     let tableView = Self.makeTableView()
 ///     let dataSource: UITableViewDiffableDataSource<Int, Int>
@@ -18,13 +18,13 @@ import UIKit
 ///     }
 /// }
 /// ````
-public protocol TableCellAssociatedController: UIViewController {
+public protocol TableCellAssociatable: UIViewController {
     associatedtype C: UITableViewCell
     static var associatedCellClass: C.Type { get }
     var tableView: UITableView { get }
 }
 
-public extension TableCellAssociatedController {
+public extension TableCellAssociatable {
     static func dequeueAssociatedCell(for tableView: UITableView, indexPath: IndexPath) -> C {
         return tableView.dequeueReusableCell(Self.associatedCellClass, for: indexPath)
     }

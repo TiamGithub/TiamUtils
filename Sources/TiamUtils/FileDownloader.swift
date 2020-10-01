@@ -25,6 +25,14 @@ public final class FileDownloader {
         self.delegate.weakFileDownloader = self
     }
 
+    internal init<T: StubURLsProviding>(stubClass: T.Type) {
+        let configuration = URLSessionConfiguration.default
+        configuration.waitsForConnectivity = true
+        configuration.protocolClasses = [URLProtocolMock<T>.self]
+        self.urlSession = URLSession(configuration: configuration, delegate: delegate, delegateQueue: nil)
+        self.delegate.weakFileDownloader = self
+    }
+
     deinit {
         urlSession.invalidateAndCancel()
     }

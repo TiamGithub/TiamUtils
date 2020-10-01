@@ -71,6 +71,40 @@ public extension UIViewController {
     }
 }
 
+#if DEBUG
+import SwiftUI
+
+public extension UIViewController {
+    /// Creates a Xcode 11+ preview for the current view controller
+    /// ````
+    /// #if canImport(SwiftUI) && DEBUG
+    /// import SwiftUI
+    ///
+    /// @available(iOS 13.0, *)
+    /// struct VCPreview: PreviewProvider {
+    ///     static var previews: some View {
+    ///         ViewController(viewModel: ViewModel()).asPreview()
+    ///     }
+    /// }
+    /// #endif
+    /// ````
+    @available(iOS 13, *)
+    func asPreview() -> some View {
+        Preview(viewController: self)
+    }
+
+    @available(iOS 13, *)
+    private struct Preview: UIViewControllerRepresentable {
+        let viewController: UIViewController
+
+        func makeUIViewController(context: Context) -> UIViewController {
+            viewController
+        }
+
+        func updateUIViewController(_ uiViewController: UIViewController, context: Context) { }
+    }
+}
+#endif
 
 
 public extension UIPopoverPresentationControllerDelegate where Self: UIViewController {
