@@ -1,10 +1,47 @@
 import UIKit
 
-/// A compositional collection view with strongly typed cell, header and footer classes, and a corresponding diffable data source
+/// A compositional collection view with strongly typed cell, header(optional) and footer(optional) classes, a corresponding diffable data source and prefetching support(optional)
+///
+/// Code exemple:
+/// ````
+/// class ViewController: UIViewController {
+///     private let dataSource: UICollectionViewDiffableDataSource<Int, Int>
+///     private let viewModel: ViewModel
+///     private let collectionView = CompositionalCollectionView(
+///         layout: Self.makeCompositionaLayout(),
+///         cellClass: CollectionCell.self,
+///         headerClass: CollectionHeader.self)
+///
+///     init(viewModel: ViewModel) {
+///         self.viewModel = viewModel
+///
+///         self.dataSource = collectionView.makeDiffableDataSource(configureCell: { cv, cell, indexPath, itemInfo in
+///             // configure the `cell` here using the viewModel
+///         }, configureHeader: { cv, header, indexPath in
+///             // configure the `header` here using the viewModel
+///         }, prefetchCallback: { cv, type, indexPaths in
+///             switch type {
+///             case .fetch: // prefetch data using the viewModel
+///             case .cancel: // cancel prefetching
+///             }
+///         })
+///
+///         super.init(nibName: nil, bundle: nil)
+///     }
+///
+///     private static func makeCompositionaLayout() -> UICollectionViewCompositionalLayout {
+///         // setup and return a Compositional Layout here
+///     }
+/// }
+/// ````
 @available(iOS 13.0, *)
 public final class CompositionalCollectionView<C: UICollectionViewCell, H: UICollectionReusableView, F: UICollectionReusableView>: UICollectionView {
+    public enum PrefetchCallbackType {
+        case fetch, cancel
+    }
+
     #if DEBUG
-    let hasRegistered: (header: Bool, footer: Bool)
+    internal let hasRegistered: (header: Bool, footer: Bool)
     #endif
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -47,7 +84,7 @@ public final class CompositionalCollectionView<C: UICollectionViewCell, H: UICol
         configureCell: @escaping (_ cv: Self, _ cell: C, _ indexPath: IndexPath, _ cellIdentifier: II) -> Void,
         configureHeader: ((CompositionalCollectionView<C, H, F>, H, IndexPath) -> Void)? = nil,
         configureFooter: ((CompositionalCollectionView<C, H, F>, F, IndexPath) -> Void)? = nil,
-        prefetchCallback: ((CompositionalCollectionView<C, H, F>, DiffableDataSource<SI, II>.CallbackType, [IndexPath]) -> Void)? = nil)
+        prefetchCallback: ((CompositionalCollectionView<C, H, F>, PrefetchCallbackType, [IndexPath]) -> Void)? = nil)
     -> UICollectionViewDiffableDataSource<SI, II> {
         #if DEBUG
         assert(hasRegistered.header == (configureHeader != nil), hasRegistered.header ? "Header configuration needed" : "No header registered")
@@ -91,12 +128,9 @@ public final class CompositionalCollectionView<C: UICollectionViewCell, H: UICol
     }
 
     /// A specialized diffable data source that supports prefetching and dequeuing cells, headers & footers
-    final public class DiffableDataSource<SI: Hashable, II: Hashable>: UICollectionViewDiffableDataSource<SI, II>, UICollectionViewDataSourcePrefetching {
-        public enum CallbackType {
-            case fetch, cancel
-        }
+    final private class DiffableDataSource<SI: Hashable, II: Hashable>: UICollectionViewDiffableDataSource<SI, II>, UICollectionViewDataSourcePrefetching {
 
-        fileprivate var prefetchCallback: ((CompositionalCollectionView<C, H, F>, CallbackType, [IndexPath]) -> Void)? = nil
+        fileprivate var prefetchCallback: ((CompositionalCollectionView<C, H, F>, PrefetchCallbackType, [IndexPath]) -> Void)? = nil
 
         public func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
             let ccv = collectionView as! CompositionalCollectionView<C, H, F>

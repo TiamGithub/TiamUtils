@@ -10,25 +10,16 @@ public final class FileDownloader {
 
     public typealias UpdateHandler = (StateChange) -> Void
 
-    fileprivate class Delegate: NSObject {
-        fileprivate weak var weakFileDownloader: FileDownloader?
+    public convenience init() {
+        self.init(protocolClasses: nil)
     }
 
-    private var ongoingDownloads = [URLRequest: [UpdateHandler]]()
-    private let delegate = Delegate()
-    private let urlSession: URLSession
-
-    public init() {
+    internal init(protocolClasses: [URLProtocol.Type]?) {
         let configuration = URLSessionConfiguration.default
         configuration.waitsForConnectivity = true
-        self.urlSession = URLSession(configuration: configuration, delegate: delegate, delegateQueue: nil)
-        self.delegate.weakFileDownloader = self
-    }
-
-    internal init<T: StubURLsProviding>(stubClass: T.Type) {
-        let configuration = URLSessionConfiguration.default
-        configuration.waitsForConnectivity = true
-        configuration.protocolClasses = [URLProtocolMock<T>.self]
+        if let protocolClasses = protocolClasses {
+            configuration.protocolClasses = protocolClasses
+        }
         self.urlSession = URLSession(configuration: configuration, delegate: delegate, delegateQueue: nil)
         self.delegate.weakFileDownloader = self
     }
@@ -42,29 +33,43 @@ public final class FileDownloader {
     ///   - urlRequest: Http URL to the file to download
     ///   - handler: Handler called regularly as a download progresses, then called once when it ends
     /// - Note: The downloaded file resides inside the cache directory.
+    /// - Note: Call this method on the main thread
     public func startDownloadingFile(at urlRequest: URLRequest, updateHandler handler: @escaping UpdateHandler) {
         guard let scheme = urlRequest.url?.scheme, scheme == "http" || scheme == "https" else { return }
 
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-
-            if self.ongoingDownloads[urlRequest] != nil {
-                self.ongoingDownloads[urlRequest]?.append(handler)
-            } else {
-                self.ongoingDownloads[urlRequest] = [handler]
-                self.urlSession.downloadTask(with: urlRequest).resume()
-            }
+        if ongoingDownloads[urlRequest] != nil {
+            ongoingDownloads[urlRequest]?.handlers.append(handler)
+        } else {
+            ongoingDownloads[urlRequest] = (handlers: [handler], state: .waitForConnectivity)
+            urlSession.downloadTask(with: urlRequest).resume()
         }
     }
+
+    /// Get the current state for a given state
+    /// - Returns: a `progress` value if the download has started, `waitForConnectivity` if not, `nil` if there's no corresponding download
+    /// - Note: Call this method on the main thread
+    public func currentState(for urlRequest: URLRequest) -> StateChange? {
+        return ongoingDownloads[urlRequest]?.state
+    }
+
+    fileprivate class Delegate: NSObject {
+        fileprivate weak var weakFileDownloader: FileDownloader?
+    }
+
+    private var ongoingDownloads = [URLRequest: (handlers: [UpdateHandler], state: StateChange)]()
+    private let delegate = Delegate()
+    private let urlSession: URLSession
 
     private func downloadTask(_ downloadTask: URLSessionDownloadTask, did change: StateChange) {
         DispatchQueue.main.async { [weak self] in
             guard let urlRequest = downloadTask.originalRequest else {
                 return assertionFailure("Missing url request in download task: \(downloadTask)")
             }
-            guard let self = self, let handlers = self.ongoingDownloads[urlRequest] else {
+            guard let self = self, let handlers = self.ongoingDownloads[urlRequest]?.handlers else {
                 return print("Request already removed")
             }
+
+            self.ongoingDownloads[urlRequest]?.state = change
 
             if case .finish = change {
                 self.ongoingDownloads.removeValue(forKey: urlRequest)

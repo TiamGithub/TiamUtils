@@ -1,6 +1,7 @@
 import Foundation
 
 public extension HTTPURLResponse {
+    /// Represents an error returned by a failed http request
     struct ServerError: LocalizedError {
         public let statusCode: Int
 

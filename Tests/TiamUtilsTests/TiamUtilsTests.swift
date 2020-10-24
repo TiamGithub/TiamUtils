@@ -108,15 +108,12 @@ final class TiamUtilsTests: XCTestCase {
     func testFileDownloader() {
         struct Stub: StubURLsProviding {
             static var stubURLs: [URL : Data] = [
-//                "https://www.google.com/404": Data(),
                 "https://www.google.com": "toto".data(using: .utf8)!,
             ]
         }
-        let fileDownloader = FileDownloader(stubClass: Stub.self)
-//        let fileDownloader = FileDownloader()
+        let fileDownloader = FileDownloader(protocolClasses: [URLProtocolMock<Stub>.self])
 
-        let url1 = URL(string: "https://www.google.com")!
-        let request1 = URLRequest(url: url1)
+        let request1 = URL(string: "https://www.google.com")!.toRequest()
         let expectation1 = XCTestExpectation(description: "download successful")
         fileDownloader.startDownloadingFile(at: request1, updateHandler: { change in
             print(change)
@@ -126,8 +123,7 @@ final class TiamUtilsTests: XCTestCase {
             }
         })
 
-        let url2 = URL(string: "https://www.google.com/404")!
-        let request2 = URLRequest(url: url2)
+        let request2 = URL(string: "https://www.google.com/404")!.toRequest()
         let expectation2 = XCTestExpectation(description: "404 error")
         fileDownloader.startDownloadingFile(at: request2, updateHandler: { change in
             print(change)
@@ -136,10 +132,8 @@ final class TiamUtilsTests: XCTestCase {
                 expectation2.fulfill()
             }
         })
-        wait(for: [
-            expectation1,
-            expectation2,
-        ], timeout: 1000)
+
+        wait(for: [expectation1, expectation2], timeout: 1)
     }
 
     static var allTests = [

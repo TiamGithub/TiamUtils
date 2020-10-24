@@ -32,7 +32,7 @@ public extension UICollectionView {
         }
     }
 
-    /// Dequeue a reusable view registered with `register(_:, ofType:)`
+    /// Dequeue a reusable view registered with `register<T>(_:ofType:)`
     /// - Parameters:
     ///   - item: cell or header or footer
     func dequeueReusable<T: UICollectionReusableView>(_ item: Item, for indexPath: IndexPath) -> T {
