@@ -17,11 +17,17 @@ public extension UIViewController {
     /// - Parameters:
     ///   - childVC: the contained view controller
     ///   - containerView: the view in wich to add add the child view controller's root view. By default the container's root view is used.
+    ///   - guideKeyPath: safe areea by default, pass `nil` to force the use of the current view itself
     ///   - edgeInsets: edge insets around the child view controller's view.
-    func embedChild(_ childVC: UIViewController, inside containerView: UIView? = nil, edgeInsets: UIEdgeInsets = .zero) {
+    func embedChild(
+        _ childVC: UIViewController,
+        inside containerView: UIView? = nil,
+        constrainedToGuide guideKeyPath: KeyPath<UIView, UILayoutGuide>? = \.safeAreaLayoutGuide,
+        edgeInsets: UIEdgeInsets = .zero)
+    {
         let containerView: UIView = containerView ?? self.view
         self.addChild(childVC)
-        containerView.addFillingSubview(childVC.view, edgeInsets: edgeInsets)
+        containerView.addFillingSubview(childVC.view, constrainedToGuide: guideKeyPath, edgeInsets: edgeInsets)
         childVC.didMove(toParent: self)
     }
 
