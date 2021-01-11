@@ -11,4 +11,10 @@ public extension CGSize {
             return CGSize(width: containerSize.height * aspectRatio, height: containerSize.height)
         }
     }
+
+    /// Returns whether a rectangle of this size contains the specified point.
+    func contains(_ point: CGPoint) -> Bool {
+        let rect = CGRect.init(origin: .zero, size: self)
+        return rect.contains(point)
+    }
 }

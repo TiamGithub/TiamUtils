@@ -1,4 +1,4 @@
-import Foundation
+//import Foundation
 
 public extension SignedInteger {
     /// Returns the next integer value contained in the provided `range` in a circular way (ie. loops back when highest value is reached)
