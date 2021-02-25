@@ -24,6 +24,7 @@ public extension View {
                         }
                     }
                 }
+                .edgesIgnoringSafeArea(.all)
                 .onTapGesture(perform: isDiscardable ? { isPresented.wrappedValue = false } : {})
 
                 popupContent()
@@ -31,7 +32,6 @@ public extension View {
                     .padding()
                     .background(PopupRectangleView())
             }
-            .edgesIgnoringSafeArea(.all)
         })
     }
 }
