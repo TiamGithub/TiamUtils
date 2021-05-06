@@ -2,17 +2,17 @@ import UIKit
 
 public extension UIColor {
     struct RGBComponents: Equatable {
-        let red: CGFloat
-        let green: CGFloat
-        let blue: CGFloat
-        let alpha: CGFloat
+        public let red: CGFloat
+        public let green: CGFloat
+        public let blue: CGFloat
+        public let alpha: CGFloat
     }
 
     struct HSBComponents: Equatable {
-        let hue: CGFloat
-        let saturation: CGFloat
-        let brightness: CGFloat
-        let alpha: CGFloat
+        public let hue: CGFloat
+        public let saturation: CGFloat
+        public let brightness: CGFloat
+        public let alpha: CGFloat
     }
 
     static func random(alpha: CGFloat = 1, range: ClosedRange<CGFloat> = 0...1) -> UIColor {
