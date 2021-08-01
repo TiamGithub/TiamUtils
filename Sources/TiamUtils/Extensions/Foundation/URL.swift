@@ -4,7 +4,7 @@ public extension URL {
     /// Use this directory to store files that the app uses to run but that should remain hidden from the user. This directory can also include data files, configuration files, templates and modified versions of resources loaded from the app bundle.
     /// - Note: The contents of this directory are backed up by iTunes and iCloud.
     /// - Warning: By default, this directory is not pre-created on disk by the system
-    static let applicationSupportDirectory = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true).first!
+    static let applicationSupportDirectory = try! FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
 
     /// Use this directory to store user-generated content locally. The contents of this directory can be made available to the user through file sharing; therefore, this directory should only contain files that you may wish to expose to the user.
     ///
