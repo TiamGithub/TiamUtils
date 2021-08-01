@@ -1,39 +1,48 @@
 import QuartzCore
 
-/// Simple helper class wrapping a CADisplayLink and a callbaack synchronized with the refresh rate of the display
+/// Simple helper wrapping a CADisplayLink and a callback synchronized with the refresh rate of the display
 public final class DisplayRefreshRateTimer {
-    private var timer: CADisplayLink?
-    private let callback: () -> Void
+    private let displayLink: CADisplayLink
+    private let timerTarget: TimerTarget
 
-    /// Instatiates a timer in a paused state. Call `resume()` when ready.
+    /// Instantiates a timer in a paused state. Call `resume()` when ready.
     /// - Parameters:
     ///   - preferredFramesPerSecond: Pass a low value (eg. 15 or 30) to decrease battery usage. By default it's equal to the maximum refresh rate of the display (usually 60 FPS).
-    ///   - callback: Called when the screen refershes.
+    ///   - callback: Called when the screen refreshes.
     public init(preferredFramesPerSecond: Int? = nil, callback: @escaping () -> Void) {
-        self.callback = callback
-        self.timer = CADisplayLink(target: self, selector: #selector(timerFired))
+        self.timerTarget = TimerTarget(callback: callback)
+        self.displayLink = CADisplayLink(target: timerTarget, selector: #selector(TimerTarget.timerFired))
+
         if let preferredFPS = preferredFramesPerSecond {
-            timer?.preferredFramesPerSecond = preferredFPS
+            displayLink.preferredFramesPerSecond = preferredFPS
         }
-        timer?.isPaused = true
-        timer?.add(to: .main, forMode: .common)
+        displayLink.isPaused = true
+        displayLink.add(to: .main, forMode: .common)
     }
 
     /// Pause the timer
     public func pause() {
-        timer?.isPaused = true
+        displayLink.isPaused = true
     }
 
     /// Resume a paused timer
     public func resume() {
-        timer?.isPaused = false
+        displayLink.isPaused = false
     }
 
     deinit {
-        timer?.invalidate()
+        displayLink.invalidate()
     }
 
-    @objc private func timerFired(displaylink: CADisplayLink) {
-        callback()
+    private final class TimerTarget {
+        private let callback: () -> Void
+
+        init(callback: @escaping () -> Void) {
+            self.callback = callback
+        }
+
+        @objc func timerFired(displaylink: CADisplayLink) {
+            callback()
+        }
     }
 }
