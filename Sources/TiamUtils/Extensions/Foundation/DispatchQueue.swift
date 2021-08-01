@@ -14,4 +14,13 @@ public extension DispatchQueue {
             Self.main.async(group: group, qos: qos, flags: flags, execute: work)
         }
     }
+
+    /// Dispatch `work` synchronously on the main queue while avoiding deadlocks if calling from the main thread
+    static func mainSyncIfNeeded<T>(execute work: () -> T) -> T {
+        if Thread.isMainThread {
+            return work()
+        } else {
+            return Self.main.sync(execute: work)
+        }
+    }
 }
