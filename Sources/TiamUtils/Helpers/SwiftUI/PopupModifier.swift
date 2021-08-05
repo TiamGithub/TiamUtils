@@ -7,14 +7,16 @@ public extension View {
     ///   - isPresented: A binding to whether the sheet is presented
     ///   - isDiscardable: If `true`, a tep on the background will dismiss the popup
     ///   - backgroundStyle: A style for the popup's background
+    ///   - onDismiss: A closure called after the popup is dismissed
     ///   - popupContent: A closure returning the content of the sheet.
     func popup<PopupContent: View>(
         isPresented: Binding<Bool>,
         isDiscardable: Bool = true,
         backgroundStyle: PopupBackgroundStyle? = .blur(.dark),
+        onDismiss: (() -> Void)? = nil,
         @ViewBuilder popupContent: @escaping () -> PopupContent)
     -> some View {
-        self.modifier(ModalViewModifier(isPresented: isPresented, presentationStyle: .overFullScreen, transitionStyle: .crossDissolve) {
+        self.modifier(ModalViewModifier(isPresented: isPresented, presentationStyle: .overFullScreen, transitionStyle: .crossDissolve, onDismiss: onDismiss) {
             ZStack {
                 Group {
                     if let popupBackgroundStyle = backgroundStyle {
