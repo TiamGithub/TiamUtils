@@ -28,6 +28,12 @@ public struct ModalViewModifier<ModalContent: View>: ViewModifier {
 
     public func body(content: Content) -> some View {
         return content
+            .onChange(of: horizontalSizeClass) { _ in
+                dismissIfNeeded()
+            }
+            .onChange(of: verticalSizeClass) { _ in
+                dismissIfNeeded()
+            }
             .onChange(of: isPresented) { isPresentedNewValue in
                 if isPresentedNewValue {
                     let ctrl = UIHostingController(rootView: modalContent())
@@ -37,15 +43,16 @@ public struct ModalViewModifier<ModalContent: View>: ViewModifier {
                     vc = ctrl
                     UIViewController.topPresentedController?.present(ctrl, animated: true)
                 } else {
-                    vc?.dismiss(animated: true, completion: onDismiss)
-                    vc = nil
+                    dismissIfNeeded()
                 }
             }
-            .onChange(of: horizontalSizeClass) { _ in
-                isPresented = false
-            }
-            .onChange(of: verticalSizeClass) { _ in
-                isPresented = false
-            }
+    }
+
+    private func dismissIfNeeded() {
+        vc?.dismiss(animated: true, completion: onDismiss)
+        vc = nil
+        if isPresented {
+            isPresented = false
+        }
     }
 }
