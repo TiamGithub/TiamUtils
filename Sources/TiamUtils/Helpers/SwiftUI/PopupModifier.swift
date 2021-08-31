@@ -5,7 +5,7 @@ public extension View {
     /// Presents a modal popup when a given condition is true.
     /// - Parameters:
     ///   - isPresented: A binding to whether the sheet is presented
-    ///   - isDiscardable: If `true`, a tep on the background will dismiss the popup
+    ///   - isDiscardable: If `true`, a tap on the background will dismiss the popup
     ///   - backgroundStyle: A style for the popup's background
     ///   - onDismiss: A closure called after the popup is dismissed
     ///   - popupContent: A closure returning the content of the sheet.
@@ -46,10 +46,10 @@ public enum PopupBackgroundStyle {
 @available(iOS 13.0, *)
 private struct PopupRectangleView: View {
     var body: some View {
-        RoundedRectangle(cornerRadius: 5)
+        RoundedRectangle(cornerRadius: 8)
             .fill(Color(.secondarySystemBackground))
             .overlay(
-                RoundedRectangle(cornerRadius: 5)
+                RoundedRectangle(cornerRadius: 8)
                     .stroke(Color(.tertiarySystemBackground), lineWidth: 1)
             )
             .shadow(color: Color(white: 0, opacity: 0.9), radius: 15)

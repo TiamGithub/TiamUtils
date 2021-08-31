@@ -34,13 +34,13 @@ public extension FileManager {
     }
 
     /// Helper function to sanitize some input string in order to get a filesafe name
-    static func safeFilename(from originalFilename: String) -> String? {
+    static func safeFilename(from originalFilename: String, separator: String = "_") -> String? {
         let invalidCharacters = CharacterSet(charactersIn: ":/\\?%*|\"<>")
             .union(.newlines)
             .union(.illegalCharacters)
             .union(.controlCharacters)
         let components = originalFilename.components(separatedBy: invalidCharacters)
-        let string = components.joined(separator: "_")
+        let string = components.joined(separator: separator)
 
         guard !string.isEmpty,
               let data = string.data(using: .ascii, allowLossyConversion: true),

@@ -8,19 +8,21 @@ import Foundation
 ///   2. The `id` property is `Hashable`, `Codable` and `CustomStringConvertible` so you can still use it as a traditional unique identifer
 ///   3. `SafeIdentifiable` cannot be used as a type, it can only be used as a generic constraint
 /// - `RawIdentifierType` is the type of the actual unique identifier.
-///   - It's a `String` by default, but it can be anything that conforms to `IdentifierRequirements` (e.g. `Int`)
+///   - It's a `UUID` by default, but it can be anything that conforms to `IdentifierRequirements` (e.g. `Int`)
 ///   - The `rawIdentifier` property of `Identifier<Self>` is used as the backing store for the actual unique identifier
 /// - Code examples:
 /// ````
 /// struct User: SafeIdentifiable, Codable { // Automatic Codable conformance
+///     typealias RawIdentifierType = String // Instead of the default UUID
 ///     let id: Identifier<User>
 ///     var name = ""
 /// }
 /// struct Country: SafeIdentifiable {
+///     typealias RawIdentifierType = String
 ///     let id: Identifier<Country>
 /// }
 /// struct Product: SafeIdentifiable {
-///     typealias RawIdentifierType = Int // Instead of the default String
+///     typealias RawIdentifierType = Int
 ///     let id: Identifier<Product>
 /// }
 /// struct Group: SafeIdentifiable {
@@ -39,7 +41,7 @@ import Foundation
 /// ````
 public protocol SafeIdentifiable: Hashable, CustomStringConvertible, Identifiable {
     typealias IdentifierRequirements = Hashable & CustomStringConvertible & Codable
-    associatedtype RawIdentifierType: IdentifierRequirements = String
+    associatedtype RawIdentifierType: IdentifierRequirements = UUID
     var id: Identifier<Self> { get }
 }
 

@@ -1,6 +1,6 @@
 import Foundation
 
-extension Bundle {
+public extension Bundle {
     /// Decodes a JSON file present in this Bundle
     /// - Parameters:
     ///   - type: the Decodable metatype

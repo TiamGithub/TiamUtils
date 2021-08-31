@@ -113,7 +113,7 @@ final class TiamUtilsTests: XCTestCase {
         }
         let fileDownloader = FileDownloader(protocolClasses: [URLProtocolMock<Stub>.self])
 
-        let request1 = URL(string: "https://www.google.com")!.toRequest()
+        let request1 = URL(string: "https://www.google.com")!.toHTTPRequest()
         let expectation1 = XCTestExpectation(description: "download successful")
         fileDownloader.startDownloadingFile(at: request1, updateHandler: { change in
             print(change)
@@ -123,7 +123,7 @@ final class TiamUtilsTests: XCTestCase {
             }
         })
 
-        let request2 = URL(string: "https://www.google.com/404")!.toRequest()
+        let request2 = URL(string: "https://www.google.com/404")!.toHTTPRequest()
         let expectation2 = XCTestExpectation(description: "404 error")
         fileDownloader.startDownloadingFile(at: request2, updateHandler: { change in
             print(change)

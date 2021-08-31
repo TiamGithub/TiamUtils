@@ -2,7 +2,7 @@ import UIKit
 
 public extension UIViewController {
     /// Returns the frontmost presented UIViewController
-    /// - Note: Only tested with single window apps without a `UISceneDelegate`
+    /// - Note: Only works with single window apps without a `UISceneDelegate`
     static var topPresentedController: UIViewController? {
         var topController = UIApplication.shared.keyWindow?.rootViewController
 

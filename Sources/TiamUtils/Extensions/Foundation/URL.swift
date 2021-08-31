@@ -58,20 +58,20 @@ public extension URL {
 
     /// Make a http request from the current url
     /// - Parameters:
-    ///   - httpMethod: The http request method. GET by default.
-    ///   - httpBody: Optional data sent as the message body of a request, such as for a POST/PUT/PATCH request.
-    ///   - httpHeaders: Optional dictionnary of additional [Field : Value] http headers.
-    func toRequest(httpMethod: String? = nil, httpBody: Data? = nil, httpHeaders: [String: String]? = nil) -> URLRequest {
+    ///   - method: The http request method. GET by default.
+    ///   - body: Optional data sent as the message body of a request, such as for a POST/PUT/PATCH request.
+    ///   - headers: Optional dictionary of additional [Field : Value] http headers.
+    func toHTTPRequest(method: String? = nil, body: Data? = nil, headers: [String: String]? = nil) -> URLRequest {
         assert(self.scheme == "http" || self.scheme == "https")
 
         var request = URLRequest(url: self)
-        if let method = httpMethod {
+        if let method = method {
             request.httpMethod = method
         }
-        if let body = httpBody {
+        if let body = body {
             request.httpBody = body
         }
-        if let headers = httpHeaders {
+        if let headers = headers {
             for (field, value) in headers {
                 request.addValue(value, forHTTPHeaderField: field)
             }
