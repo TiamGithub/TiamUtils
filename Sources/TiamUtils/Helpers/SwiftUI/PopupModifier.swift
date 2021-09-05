@@ -46,12 +46,11 @@ public enum PopupBackgroundStyle {
 @available(iOS 13.0, *)
 private struct PopupRectangleView: View {
     var body: some View {
-        RoundedRectangle(cornerRadius: 8)
+        let roundedRectangle = RoundedRectangle(cornerRadius: 8, style: .continuous)
+
+        roundedRectangle
             .fill(Color(.secondarySystemBackground))
-            .overlay(
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(Color(.tertiarySystemBackground), lineWidth: 1)
-            )
+            .overlay(roundedRectangle.stroke(Color(.tertiarySystemBackground)))
             .shadow(color: Color(white: 0, opacity: 0.9), radius: 15)
     }
 }

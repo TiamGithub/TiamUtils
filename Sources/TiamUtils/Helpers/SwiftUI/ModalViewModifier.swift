@@ -22,37 +22,45 @@ public struct ModalViewModifier<ModalContent: View>: ViewModifier {
     private let modalContent: () -> ModalContent
     private let onDismiss: (() -> Void)?
     @Binding private var isPresented: Bool
-    @State private var vc: UIViewController? = nil
+    @State private var presentedModalController: UIViewController? = nil
     @Environment(\.verticalSizeClass) private var verticalSizeClass
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     public func body(content: Content) -> some View {
         return content
             .onChange(of: horizontalSizeClass) { _ in
-                dismissIfNeeded()
+                guard isPresented else { return }
+                dismissModal()
             }
             .onChange(of: verticalSizeClass) { _ in
-                dismissIfNeeded()
+                guard isPresented else { return }
+                dismissModal()
             }
-            .onChange(of: isPresented) { isPresentedNewValue in
-                if isPresentedNewValue {
-                    let ctrl = UIHostingController(rootView: modalContent())
-                    ctrl.modalPresentationStyle = presentationStyle
-                    ctrl.modalTransitionStyle = transitionStyle
-                    ctrl.view.backgroundColor = .clear
-                    vc = ctrl
-                    UIViewController.topPresentedController?.present(ctrl, animated: true)
-                } else {
-                    dismissIfNeeded()
+            .onChange(of: isPresented) { [wasPresented = isPresented] isPresentedNewValue in
+                if !wasPresented && isPresentedNewValue {
+                    let hostingController = UIHostingController(rootView: modalContent())
+                    hostingController.modalPresentationStyle = presentationStyle
+                    hostingController.modalTransitionStyle = transitionStyle
+                    hostingController.view.backgroundColor = .clear
+                    presentedModalController = hostingController
+                    UIViewController.topPresentedController?.present(hostingController, animated: true)
+                } else if wasPresented && !isPresentedNewValue {
+                    dismissModal()
                 }
             }
     }
 
-    private func dismissIfNeeded() {
-        vc?.dismiss(animated: true, completion: onDismiss)
-        vc = nil
-        if isPresented {
-            isPresented = false
+    private func dismissModal() {
+        guard let topController = UIViewController.topPresentedController,
+              let modalController = presentedModalController else {
+            return
         }
+        guard topController === modalController else {
+            /// dismiss children first, then recursively retry dismissing the Modal on completion
+            return topController.dismiss(animated: true, completion: dismissModal)
+        }
+        presentedModalController = nil
+        modalController.dismiss(animated: true, completion: onDismiss)
+        isPresented = false
     }
 }
